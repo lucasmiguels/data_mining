@@ -10,7 +10,6 @@ import folium
 import warnings
 warnings.filterwarnings('ignore')
 
-# Conexão com o banco
 conn = psycopg2.connect(
     dbname="geodata",
     user="postgres",
@@ -19,7 +18,6 @@ conn = psycopg2.connect(
     port="5432"
 )
 
-# Funções auxiliares
 def calculate_distance(p1, p2):
     return geodesic(p1, p2).meters
 
@@ -75,7 +73,6 @@ def plot_endpoints_map(linha_id, gdf, grid_filtered, start, end):
     map_center = [gdf['geometry'].y.mean(), gdf['geometry'].x.mean()]
     m = folium.Map(location=map_center, zoom_start=14)
 
-    # Grade filtrada com pontos significativos
     for _, row in grid_filtered.iterrows():
         folium.GeoJson(row.geometry).add_to(m)
         folium.Circle(location=[row.centroid.y, row.centroid.x],
@@ -132,12 +129,12 @@ for linha in linhas:
     # Salvar mapa .html
     plot_endpoints_map(linha, gdf, grid_filtered, start, end)
 
-    # with conn.cursor() as cur:
-    #     cur.execute("""
-    #         INSERT INTO bus_end_points (linha, start_point, end_point)
-    #         VALUES (%s, ST_GeomFromText(%s, 4326), ST_GeomFromText(%s, 4326))
-    #         ON CONFLICT (linha) DO UPDATE 
-    #         SET start_point = EXCLUDED.start_point,
-    #             end_point = EXCLUDED.end_point
-    #     """, (linha, start.wkt, end.wkt))
-    #     conn.commit()
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO bus_end_points (linha, start_point, end_point)
+            VALUES (%s, ST_GeomFromText(%s, 4326), ST_GeomFromText(%s, 4326))
+            ON CONFLICT (linha) DO UPDATE 
+            SET start_point = EXCLUDED.start_point,
+                end_point = EXCLUDED.end_point
+        """, (linha, start.wkt, end.wkt))
+        conn.commit()
