@@ -7,12 +7,14 @@ Este projeto tem como objetivo realizar o processamento, análise e modelagem de
 - Mapas interativos das rotas.
 
 ## Estrutura do Projeto
+```
 ├── load/ # Scripts para carga e população do banco PostGIS
 ├── maps/ # Mapas gerados em formato HTML
 ├── queries/ # Consultas SQL utilizadas no projeto
 ├── src/ # Código-fonte principal (processamento e criação dos mapas)
 ├── .gitignore # Arquivos e pastas ignorados no versionamento
 └── README.md # Este arquivo
+```
 
 ## Como Executar
 
